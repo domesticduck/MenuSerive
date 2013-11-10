@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<palro_application name="MenuService" version="1.0.0" releasedate="2013/11/10" type="SPC" mode="transient" appkind="application/other" language="ja">
+  <title>メニューサービス</title>
+  <titlespk>メニューサービス</titlespk>
+  <description>メニューを抽出します。</description>
+</palro_application>
