@@ -109,7 +109,12 @@ namespace Model
                 istream &is = session.receiveResponse(res);
                 StreamCopier::copyToString(is, ans, 8192);
 
-                return ans;
+                unsigned int pos = ans.find_first_of(":");
+                id = ans.substr(0, pos);
+
+                string msg;
+                msg = ans.substr(pos + 1, ans.size());
+                return msg;
             }
 
             catch (Exception &ex)
