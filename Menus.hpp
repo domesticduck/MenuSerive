@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string>
+#include <typeinfo>
 
 #include <Poco/Net/HTTPClientSession.h>
 #include <Poco/Net/HTTPRequest.h>
@@ -28,7 +29,7 @@ namespace Model
 
     public:
         Menus(){
-            URI uri("http://192.168.3.6:3000");
+            URI uri("http://localhost:3000");
             session.setHost(uri.getHost());
             session.setPort(uri.getPort());
 
@@ -125,6 +126,32 @@ namespace Model
             return "";
         }
 
+       int count_main_menu(){
+            try
+            {
+                // send request
+                HTTPRequest req(HTTPRequest::HTTP_GET, path + "menus/count_main_menu.text", HTTPMessage::HTTP_1_1);
+                session.sendRequest(req);
+
+                // get response
+                HTTPResponse res;
+
+                // print response
+                string ans;
+                istream &is = session.receiveResponse(res);
+                StreamCopier::copyToString(is, ans, 8192);
+
+                int i;
+                sscanf(ans.c_str(), "%d", &i);
+                return i;
+            }
+            catch (Exception &ex)
+            {
+                cerr << ex.displayText() << endl;
+                return 0;
+            }
+            return 0;
+        }
 
         string select_sub_menu(string main_id){
             try
