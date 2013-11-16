@@ -1,7 +1,6 @@
 
 #include "MenuService.h"
 #include <spc/spcbase.h>
-#include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -9,8 +8,12 @@
 #include <Poco/Net/HTTPRequest.h>
 #include <Poco/Net/HTTPResponse.h>
 #include <Poco/URI.h>
+#include <iostream>
+#include <sstream>
 
-#include "XmlAccessor.hpp"
+#include "Menus.hpp"
+
+using namespace Model;
 
 namespace spc {
 	// メインプロシージャ
@@ -19,34 +22,57 @@ namespace spc {
 		setLogLevel(SPC_LOG_LEVEL_TRACE); 
 
     	SPC_LOG_DEBUG("*** start ***");
+
+		Menus menus; 
 		
  		SPC_ANSWER answer;
  		std::vector<std::string> answerWords;
  		std::string recogWord;
- 		int recogIndex;
+
+		std::vector<std::string> yesWords, noWords, cancelWords;
 
  		// 認識したい言葉を全角カタカナで追加する
 		// オイシイ、ウマイ、ウッマのいずれかを認識する
-		answerWords.push_back("イイネ");
- 		answerWords.push_back("ハイ");
- 		answerWords.push_back("ソレニシヨウ");
+		yesWords.push_back("イイネ");
+ 		yesWords.push_back("ハイ");
+ 		yesWords.push_back("ソレニシヨウ");
 
+		noWords.push_back("イヤデス");
+		noWords.push_back("イヤ");
+		noWords.push_back("ベツノモノニシタイ");
+		noWords.push_back("ベツノモノガイイ");
+		noWords.push_back("ホカノモノガイイ");
+		cancelWords.clear();
+
+		
  		// 質問をする
  		long rtn;
+
+		std::string main_menu;
+		std::string sub_menus;	
+		int i;
 		
-		std::string oldest_date;
-		std::string main_menu_name;
-		std::string sub_menu_names;
-		oldest_date = "10";
-		main_menu_name = "ボルシチ";
-		sub_menu_names = "ハンバーグ、ラーメン、アイスクリーム、さいころステーキ、みそしる";
-		//TODO: 最古の日にちとメニューの名称を取得してくる
-		
- 		rtn = waitForAnswer("いちばんむかしにつくったメニューで" + oldest_date + "にちまえに" + main_menu_name + "を作っていますが、今日あたりどうですか",
-              answerWords,
-              answer,
-              recogWord,
-              recogIndex);
+		for ( i=0; i<3; i=i+1 ){
+			int j = 0;
+			main_menu = menus.select_main_menu();
+ 			rtn = waitForAnswer(main_menu,
+ 			yesWords,
+              noWords,
+              cancelWords,
+              answer);
+
+			 switch(answer){
+			 case SPC_ANSWER_YES:
+			 		j = 1;
+			 		break;
+			 case SPC_ANSWER_NO:	
+			 		break;			 	
+			 }
+			if(j == 1){
+				break;
+			}
+        }
+
  		if(rtn != 0){
    		// waitForAnswer処理失敗
    		// アプリケーションの終了
@@ -54,12 +80,12 @@ namespace spc {
    		return;
  		}
  		switch(answer){
-   		case SPC_ANSWER_RECOGEND:
+   		case SPC_ANSWER_YES:
      		// ここに質問が正常終了した場合の処理を記述する
  	
  			speak("こんなおかずをいっしょにつくっていましたよ");
- 			//TODO: 一番昔に作ったメニューに紐づくサブメニューを全て取得してくる(文字列として？)
- 			speak(sub_menu_names);
+ 			sub_menus = menus.select_sub_menu(menus.id);  
+ 			speak(sub_menus);
  			
  			break;
    		case SPC_ANSWER_CANCEL:
