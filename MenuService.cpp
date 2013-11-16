@@ -51,8 +51,10 @@ namespace spc {
 		std::string main_menu;
 		std::string sub_menus;	
 		int i;
-		
-		for ( i=0; i<3; i=i+1 ){
+		int k = 0;
+		int max = menus.count_main_menu();
+
+		for ( i=0; i<max; i=i+1 ){
 			int j = 0;
 			main_menu = menus.select_main_menu();
  			rtn = waitForAnswer(main_menu,
@@ -71,6 +73,13 @@ namespace spc {
 			if(j == 1){
 				break;
 			}
+			k++;
+
+			if(k == max){
+				speak("すみません。もう覚えている献立はありません。");
+				break;
+			}
+			
         }
 
  		if(rtn != 0){
@@ -86,6 +95,8 @@ namespace spc {
  			speak("こんなおかずをいっしょにつくっていましたよ");
  			sub_menus = menus.select_sub_menu(menus.id);  
  			speak(sub_menus);
+ 			speak("献立のヒントになりましたか？");
+ 			speak("料理頑張ってくださいね！");
  			
  			break;
    		case SPC_ANSWER_CANCEL:
@@ -105,5 +116,7 @@ namespace spc {
    		default:
      		break;
  		}
-	}	
+	exitComponent();
+    return;
+	}
 }
