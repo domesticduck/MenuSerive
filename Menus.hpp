@@ -29,7 +29,7 @@ namespace Model
 
     public:
         Menus(){
-            URI uri("http://192.168.3.5:3000");
+            URI uri("http://192.168.3.3:3000");
             session.setHost(uri.getHost());
             session.setPort(uri.getPort());
 
